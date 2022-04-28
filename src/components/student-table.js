@@ -31,13 +31,12 @@ const style = {
 };
 
 export default function Students() {
-    const [id, setId] = useState("")
     const [name, setName] = useState("")
     const [age, setAge] = useState("")
     const [open, setOpen] = useState(false);
+    const [idEdit, setIdEdit] = useState(0);
     const handleOpen = () => {
         setOpen(true)
-        setId('')
         setName('')
         setAge('')
     }
@@ -52,19 +51,25 @@ export default function Students() {
     const getItem = localStorage.getItem('students')
     const [students, setStudents] = useState(getItem ? JSON.parse(getItem) : null || rows)
 
-    const finishSubmit = (id, name, age) => {
+    const finishSubmit = (name, age) => {
+        const maxId = getMaxId()
+        const id = maxId + 1
         let tmp = [...students, { id, name, age }]
-        const filtered = students.filter((v, i) => v.id !== id)
-        if (filtered) {
-            tmp = [...filtered, { id, name, age }]
-        } 
+        if (idEdit) {
+            const filtered = students.filter((v, i) => v.id !== idEdit)
+            tmp = [...filtered, { id: idEdit, name, age }]
+            setIdEdit(0)
+        }
+        console.log('tmp', tmp)
         localStorage.setItem('students', JSON.stringify(tmp))
         setStudents(tmp)
     }
-
-    const handleChangeID = (event) => {
-        setId(event.target.value)
+    const getMaxId = () => {
+        return students.reduce(function (p, v) {
+            return (p.id > v.id ? p.id : v.id);
+        });
     }
+
     const handleChangeName = (event) => {
         setName(event.target.value)
     }
@@ -73,7 +78,7 @@ export default function Students() {
     }
 
     const handleSubmit = (event) => {
-        finishSubmit(id, name, age)
+        finishSubmit(name, age)
         handleClose()
         event.preventDefault()
     }
@@ -84,7 +89,7 @@ export default function Students() {
 
     }
     const editItem = (data) => {
-        setId(data.id)
+        setIdEdit(data.id)
         setName(data.name)
         setAge(data.age)
     }
@@ -124,12 +129,8 @@ export default function Students() {
                 >
                     <Box sx={style}>
                         <form >
-                            <label>ID
-                                <input placeholder='ID' value={id} onChange={handleChangeID} />
-                            </label>
-                            <br></br>
                             <label>Name
-                                <input type="text" value={name} onChange={handleChangeName} />
+                                <input type="text" placeholder="Name" value={name} onChange={handleChangeName} />
                             </label>
                             <br></br>
                             <label>Age
