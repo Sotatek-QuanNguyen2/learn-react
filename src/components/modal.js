@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import { FormControl, Input, InputLabel } from '@mui/material';
 
 const style = {
   position: 'absolute',
@@ -19,20 +19,53 @@ export default function BasicModal() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [id, setId] = React.useState("")
+  const [name, setName] = React.useState("")
+  const [age, setAge] = React.useState("")
+
+
+  const handleChangeID = (event) => {
+    setId(event.target.value)
+  }
+  const handleChangeName = (event) => {
+    setName(event.target.value)
+  }
+  const handleChangeAge = (event) => {
+    setAge(event.target.value)
+  }
+
+  const handleSubmit = (event) => {
+    handleClose()
+    event.preventDefault()
+  }
 
   return (
     <div>
-      <Button onClick={handleOpen}>Open modal</Button>
+      <Button onClick={handleOpen}>Create record</Button>
       <Modal
         open={open}
         onClose={handleClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <FormControl>
-          <InputLabel htmlFor="my-input">Email address</InputLabel>
-          <Input id="my-input" aria-describedby="my-helper-text" />
-        </FormControl>
+        <Box sx={style}>
+          <form >
+            <label>ID
+              <input placeholder='ID' value={id} onChange={handleChangeID} />
+            </label>
+            <br></br>
+            <label>Name
+              <input type="text" value={name} onChange={handleChangeName} />
+            </label>
+            <br></br>
+            <label>Age
+              <input placeholder='Age' value={age} onChange={handleChangeAge} />
+            </label>
+            <br />
+            <Button variant="contained" onClick={handleSubmit} >Submit</Button>
+          </form>
+        </Box>
+
       </Modal>
     </div>
   );
