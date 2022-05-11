@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -41,7 +40,7 @@ export default function Students() {
         setAge('')
     }
     const handleClose = () => setOpen(false);
-    const [rows, setRows] = useState([
+    const [rows] = useState([
         { id: 1, name: 'Elvis Presley', age: 18 },
         { id: 2, name: 'Paul McCartney', age: 18 },
         { id: 3, name: 'Tom Scholz', age: 18 },
