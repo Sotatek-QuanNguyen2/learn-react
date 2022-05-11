@@ -11,7 +11,7 @@ export default function Test() {
         const timer = setTimeout(() => {
             setA((a) => a + 1);
             console.log('log a', a)
-        }, 3000);
+        }, 1000);
         return () => {
             clearTimeout(timer);
         };
@@ -29,18 +29,18 @@ export default function Test() {
 
     return (
         <React.Fragment>
-            <div>
-                {!error ? (
-                    posts.map((post) => (
-                        <ul key={post.id}>
-                            <li>{post.title}</li>
-                        </ul>
-                    ))
-                ) : (
-                    <p>{error}</p>
-                )}
-            </div>
-            {/*<p>{a}</p>*/}
+            {/*<div>*/}
+            {/*    {!error ? (*/}
+            {/*        posts.map((post) => (*/}
+            {/*            <ul key={post.id}>*/}
+            {/*                <li>{post.title}</li>*/}
+            {/*            </ul>*/}
+            {/*        ))*/}
+            {/*    ) : (*/}
+            {/*        <p>{error}</p>*/}
+            {/*    )}*/}
+            {/*</div>*/}
+            <p>{a}</p>
         </React.Fragment>
     );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState } from "react";
+import {useState} from "react";
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -14,6 +14,13 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 // Generate Order Data
 
@@ -33,19 +40,34 @@ export default function Students() {
     const [name, setName] = useState("")
     const [age, setAge] = useState("")
     const [open, setOpen] = useState(false);
+    const [openConfirmDelete, setOpenConfirmDelete] = useState(false);
     const [idEdit, setIdEdit] = useState(0);
+    const [indexDelete, setIndexDelete] = useState(0);
     const handleOpen = () => {
         setOpen(true)
         setName('')
         setAge('')
     }
-    const handleClose = () => setOpen(false);
+    const handleClose = () => {
+        setOpen(false);
+        setOpenConfirmDelete(false);
+        setIdEdit(0);
+        setIndexDelete(0)
+    }
+    const handleClickOpenConfirm = (index) => {
+        setOpenConfirmDelete(true);
+        setIndexDelete(index);
+    };
+    const handleConfirmDelete = () => {
+        setOpenConfirmDelete(false);
+        doDelete(indexDelete)
+    };
     const [rows] = useState([
-        { id: 1, name: 'Elvis Presley', age: 18 },
-        { id: 2, name: 'Paul McCartney', age: 18 },
-        { id: 3, name: 'Tom Scholz', age: 18 },
-        { id: 4, name: 'Michael Jackson', age: 18 },
-        { id: 5, name: 'Bruce Springsteen', age: 18 },
+        {id: 1, name: 'Elvis Presley', age: 18},
+        {id: 2, name: 'Paul McCartney', age: 18},
+        {id: 3, name: 'Tom Scholz', age: 18},
+        {id: 4, name: 'Michael Jackson', age: 18},
+        {id: 5, name: 'Bruce Springsteen', age: 18},
     ])
     const getItem = localStorage.getItem('students')
     const [students, setStudents] = useState(getItem ? JSON.parse(getItem) : null || rows)
@@ -53,10 +75,10 @@ export default function Students() {
     const finishSubmit = (name, age) => {
         const maxId = getMaxId()
         const id = maxId + 1
-        let tmp = [...students, { id, name, age }]
+        let tmp = [...students, {id, name, age}]
         if (idEdit) {
             const filtered = students.filter((v, i) => v.id !== idEdit)
-            tmp = [...filtered, { id: idEdit, name, age }]
+            tmp = [...filtered, {id: idEdit, name, age}]
             setIdEdit(0)
         }
         console.log('tmp', tmp)
@@ -81,7 +103,7 @@ export default function Students() {
         handleClose()
         event.preventDefault()
     }
-    const handleDelete = (index, e) => {
+    const doDelete = (index) => {
         const filtered = students.filter((v, i) => i !== index)
         setStudents(filtered)
         localStorage.setItem('students', JSON.stringify(filtered))
@@ -112,13 +134,37 @@ export default function Students() {
                                 <TableCell>{row.id}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.age}</TableCell>
-                                <TableCell><EditIcon onClick={() => { handleOpen(); editItem(row) }}></EditIcon></TableCell>
-                                <TableCell><DeleteForeverIcon onClick={e => handleDelete(index, e)}></DeleteForeverIcon></TableCell>
+                                <TableCell><EditIcon onClick={() => {
+                                    handleOpen();
+                                    editItem(row)
+                                }}></EditIcon></TableCell>
+                                <TableCell><DeleteForeverIcon onClick={e => handleClickOpenConfirm(index)}></DeleteForeverIcon></TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-                {/* <BasicModal finishSubmit={finishSubmit}></BasicModal> */}
+                <Dialog
+                    open={openConfirmDelete}
+                    onClose={handleClose}
+                    aria-labelledby="draggable-dialog-title"
+                >
+                    <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
+                        Confirm delete record
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Are you sure?
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button autoFocus onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleConfirmDelete}>Delete</Button>
+                    </DialogActions>
+                </Dialog>
+
+
                 <Button onClick={handleOpen}>Create record</Button>
                 <Modal
                     open={open}
@@ -126,17 +172,39 @@ export default function Students() {
                     aria-labelledby="modal-modal-title"
                     aria-describedby="modal-modal-description"
                 >
-                    <Box sx={style}>
-                        <form >
-                            <label>Name
-                                <input type="text" placeholder="Name" value={name} onChange={handleChangeName} />
-                            </label>
-                            <br></br>
-                            <label>Age
-                                <input placeholder='Age' value={age} onChange={handleChangeAge} />
-                            </label>
-                            <br />
-                            <Button variant="contained" onClick={handleSubmit} >Submit</Button>
+                    <Box sx={style} component="form"
+                         noValidate
+                         autoComplete="off">
+                        <form>
+                            <TextField
+                                fullWidth
+                                label="Name"
+                                defaultValue={name}
+                                variant="standard"
+                                rows={12}
+                                onChange={handleChangeName}
+                            />
+                            {idEdit !== 0 ? (
+                                <TextField
+                                    fullWidth
+                                    disabled
+                                    label="Age"
+                                    defaultValue={age}
+                                    rows={12}
+                                    variant="standard"
+                                />
+                            ) : (
+                                <TextField
+                                    fullWidth
+                                    label="Age"
+                                    defaultValue={age}
+                                    variant="standard"
+                                    type="number"
+                                    rows={12}
+                                    onChange={handleChangeAge}
+                                />
+                            )}
+                            <Button fullWidth variant="contained" onClick={handleSubmit}>Submit</Button>
                         </form>
                     </Box>
                 </Modal>
